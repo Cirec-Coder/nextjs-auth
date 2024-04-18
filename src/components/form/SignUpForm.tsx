@@ -4,11 +4,12 @@ import { useForm } from "react-hook-form"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-// import { toast } from "../ui/use-toast"
+import { useToast } from "../ui/use-toast"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import Link from "next/link"
 import GoogleSignInButton from "@/components/GoogleSignInButton"
+import { useRouter } from "next/navigation"
 
 const FormSchema = z.object({
     username: z.string().min(1, 'Username is required'),
@@ -25,6 +26,8 @@ const FormSchema = z.object({
     });
 
 const SignUpForm = () => {
+    const router = useRouter()
+    const {toast} = useToast()
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -37,18 +40,34 @@ const SignUpForm = () => {
 
 
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-        console.log(data);
-        
+    async function onSubmit(data: z.infer<typeof FormSchema>) {
+        const response = await fetch('/api/user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: data.username,
+                email: data.email,
+                password: data.password
+            })
+        })
 
-        // toast({
-        //   title: "You submitted the following values:",
-        //   description: (
-        //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 top-0">
-        //       <code className="text-black">{JSON.stringify(data, null, 2)}</code>
-        //     </pre>
-        //   ),
-        // })
+        if (response.ok) {
+            router.push('/sign-in')
+        } else {
+            console.log('Registration failed');
+        }
+        // console.log(data);
+
+
+        toast({
+          title: "You submitted the following values:",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 top-0">
+              <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+            </pre>
+          ),
+          variant: 'destructive'
+        })
     }
 
 
