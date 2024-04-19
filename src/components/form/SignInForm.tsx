@@ -12,6 +12,8 @@ import GoogleSignInButton from "@/components/GoogleSignInButton"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useToast } from "../ui/use-toast"
+import { MailIcon } from "lucide-react"
+import { PasswordInput } from "../ui/passwordInput"
 
 const FormSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email'),
@@ -75,7 +77,9 @@ const SignInForm = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="mail@example.com" type="email" autoComplete="email" {...field} />
+                  <Input placeholder="mail@example.com" type="email" autoComplete="email" {...field} 
+                  suffix={<MailIcon />}
+                  />
                 </FormControl>
                 {/* <FormDescription>
                 This is your public display name.
@@ -91,7 +95,7 @@ const SignInForm = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter our password" type="password" autoComplete="current-password" {...field} />
+                  <PasswordInput placeholder="Enter our password" type="password" autoComplete="current-password" {...field} />
                 </FormControl>
                 {/* <FormDescription>
                 This is your public display name.
@@ -108,7 +112,7 @@ const SignInForm = () => {
         or
       </div>
       <GoogleSignInButton>Sign in with Google</GoogleSignInButton>
-      <p className='text-center text-sm text-gray-600 mt-2'>
+      <p className='text-center text-sm text-gray-600 mt-4'>
         If you don&apos;t have an account, please&nbsp;
         <Link className='text-blue-500 hover:underline' href='/sign-up'>
           Sign up

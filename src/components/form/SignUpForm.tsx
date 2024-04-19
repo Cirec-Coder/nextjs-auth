@@ -1,7 +1,7 @@
 'use client'
 
 import { useForm } from "react-hook-form"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useToast } from "../ui/use-toast"
@@ -10,13 +10,18 @@ import { Button } from "../ui/button"
 import Link from "next/link"
 import GoogleSignInButton from "@/components/GoogleSignInButton"
 import { useRouter } from "next/navigation"
+import { MailIcon, User2Icon, } from "lucide-react"
+import { PasswordInput } from "../ui/passwordInput"
 
 const FormSchema = z.object({
     username: z.string().min(1, 'Username is required'),
     email: z.string().min(1, 'Email is required').email('Invalid email'),
     password: z.string()
         .min(1, 'Password is required')
-        .min(8, 'Password must have 8 caracters at least'),
+        // .min(12, 'Password must have 8 caracters at least')
+        .regex(/^(?=.*\d)(?=.*[!-\/:-@[-`{-~À-ÿ§µ²°£])(?=.*[a-z])(?=.*[A-Z])(?=.*[A-Za-z]).{12,32}$/,
+            `Le mot de passe doit avoir au minimum 12 caractères comprenant des majuscules, \n 
+        des minuscules, des chiffres et des caractères spéciaux`),
     confirmPassword: z.string()
         .min(1, 'Password confirmation is required')
 })
@@ -27,7 +32,7 @@ const FormSchema = z.object({
 
 const SignUpForm = () => {
     const router = useRouter()
-    const {toast} = useToast()
+    const { toast } = useToast()
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -60,13 +65,13 @@ const SignUpForm = () => {
 
 
         toast({
-          title: "You submitted the following values:",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 top-0">
-              <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-            </pre>
-          ),
-          variant: 'destructive'
+            title: "You submitted the following values:",
+            description: (
+                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 top-0">
+                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+                </pre>
+            ),
+            variant: 'success'
         })
     }
 
@@ -82,7 +87,8 @@ const SignUpForm = () => {
                             <FormItem>
                                 <FormLabel>Username</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Username" type="text" autoComplete="username"  {...field} />
+                                    <Input placeholder="Username" type="text" autoComplete="username"  {...field}
+                                        suffix={<User2Icon />} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -95,7 +101,8 @@ const SignUpForm = () => {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="mail@example.com" type="email" autoComplete="email"  {...field} />
+                                    <Input placeholder="mail@example.com" type="email" autoComplete="email"  {...field}
+                                        suffix={<MailIcon />} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -108,7 +115,7 @@ const SignUpForm = () => {
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Enter our password" type="password" autoComplete="new-password" {...field} />
+                                    <PasswordInput placeholder="Enter your password" type="password" autoComplete="new-password" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -121,7 +128,7 @@ const SignUpForm = () => {
                             <FormItem>
                                 <FormLabel>Confirme your password</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Enter our password" type="password" autoComplete="new-password" {...field} />
+                                    <PasswordInput placeholder="Enter our password" type="password" autoComplete="new-password" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -135,8 +142,8 @@ const SignUpForm = () => {
                 or
             </div>
             <GoogleSignInButton>Sign up with Google</GoogleSignInButton>
-            <p className='text-center text-sm text-gray-600 mt-2'>
-                If you don&apos;t have an account, please&nbsp;
+            <p className='text-center text-sm text-gray-600 mt-4'>
+                If you already have an account, please&nbsp;
                 <Link className='text-blue-500 hover:underline' href='/sign-in'>
                     Sign in
                 </Link>
