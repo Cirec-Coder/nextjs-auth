@@ -15,10 +15,10 @@ export const authOptions: NextAuthOptions = {
         signIn: '/sign-in',
     },
     providers: [
-            GoogleProvider({
-              clientId: process.env.GOOGLE_CLIENT_ID!,
-              clientSecret: process.env.GOOGLE_CLIENT_SECRET!
-            }),
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!
+        }),
         CredentialsProvider({
             // The name to display on the sign in form (e.g. "Sign in with...")
             name: "Credentials",
@@ -43,10 +43,10 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 if (existingUser.password) {
-                const passwordMatch = await compare(credentials.password, existingUser.password)
-                if (!passwordMatch) {
-                    return null
-                }
+                    const passwordMatch = await compare(credentials.password, existingUser.password)
+                    if (!passwordMatch) {
+                        return null
+                    }
 
                 }
 
@@ -54,24 +54,32 @@ export const authOptions: NextAuthOptions = {
                     id: `${existingUser.id}`,
                     username: existingUser.username,
                     email: existingUser.email,
+                    image: existingUser.image
                 }
             }
         })
     ],
     callbacks: {
-        async jwt({ token, user }) {
-            // console.log(token, user);
+        async jwt({ token, user, trigger, session }) {
+            if (trigger === "update") {
+                return {
+                    ...token,
+                    picture: session.user.image,
+                    ...session.user
+                }
+            }
 
             if (user) {
                 return {
                     ...token,
                     username: user.username,
+
                 }
             }
             return token
         },
         async session({ session, token }) {
-        //   console.log(token, session)
+            //   console.log(token, session)
             return {
                 ...session,
                 user: {

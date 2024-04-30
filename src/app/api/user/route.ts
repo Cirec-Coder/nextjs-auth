@@ -13,6 +13,7 @@ const UserSchema = z.object({
     password: z.string()
         .min(1, 'Password is required')
         .min(8, 'Password must have 8 caracters at least'),
+    // TODO: add regex validation
 })
 
 
@@ -46,8 +47,8 @@ export async function POST(req: Request) {
             }
         })
 
-            const { password: newPassword, ...rest } = newUser
-        return NextResponse.json({user: rest, message: 'User created successfully'}, {status: 201})
+        const { password: newPassword, ...rest } = newUser
+        return NextResponse.json({ user: rest, message: 'User created successfully' }, { status: 201 })
     } catch (error) {
         return NextResponse.json({ message: 'Somethink went wrong!' }, { status: 500 })
     }
